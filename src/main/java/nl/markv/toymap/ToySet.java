@@ -31,14 +31,20 @@ public class ToySet<K> implements Iterable<K> {
         this.keys = keys;
     }
 
-    public static <K> ToySet<K> from(Collection<@NotNull K> input) {
+    public static <K> ToySet<K> from(Collection<@NotNull K> inputs) {
         //TODO @mark: n should be the de-duplicated number?
-        var n = determineInitialCapacity(input.size());
+        var n = determineInitialCapacity(inputs.size());
         int[] hashes = new int[n];
         Object[] keys = new Object[n];
-        //TODO @mark:
+        for (var inp : inputs) {
+            int insertHash = rehash(inp.hashCode());
+            int bucket = chooseBucket(insertHash, 0, n);
+            assert hashes[bucket] == 0;  //TODO @mark: impl collisions
+            hashes[bucket] = insertHash;
+            keys[bucket] = inp;
+        }
         //noinspection unchecked
-        return (ToySet<K>) new ToySet<>(input.size(), hashes, keys);
+        return (ToySet<K>) new ToySet<>(inputs.size(), hashes, keys);
     }
 
     public boolean contains(@NotNull K lookupKey) {
@@ -47,7 +53,7 @@ public class ToySet<K> implements Iterable<K> {
         }
         int lookupHash = rehash(lookupKey.hashCode());
         for (int collisionCount = 0; collisionCount < this.bucketCnt; collisionCount++) {
-            int bucket = bucket(lookupHash, collisionCount);
+            int bucket = chooseBucket(lookupHash, collisionCount, this.bucketCnt);
             int bucketHash = this.hashes[bucket];
             if (lookupHash != bucketHash || bucketHash == 0) {
                 return false;
@@ -80,7 +86,7 @@ public class ToySet<K> implements Iterable<K> {
         return elementCount * 2;
     }
 
-    private int rehash(int pureHashCode) {
+    private static int rehash(int pureHashCode) {
         if (pureHashCode == 0) {
             return 1;
         }
@@ -91,8 +97,8 @@ public class ToySet<K> implements Iterable<K> {
     //TODO @mark: optimize this: there are some benefits to using something smart here, like DOS resistance
     //TODO @mark: but skipping that can be several times faster on simple types with cheap hashcodes
     //TODO @mark: also note that there is now a distinction between rehash and bucket
-    private int bucket(int rehashCode, int collisionCount) {
-        return (rehashCode + collisionCount) % this.bucketCnt;
+    private static int chooseBucket(int rehashCode, int collisionCount, int totalBucketCnt) {
+        return (rehashCode + collisionCount) % totalBucketCnt;
     }
 
     //TODO @mark: also note there is a bit of tension between having capacity prime vs power of two,
