@@ -31,13 +31,13 @@ public class ToySet<K> implements Iterable<K> {
         this.keys = keys;
     }
 
-    public <J> ToySet<J> from(Collection<@NotNull J> input) {
+    public static <K> ToySet<K> from(Collection<@NotNull K> input) {
         var n = determineInitialCapacity(input.size());
         int[] hashes = new int[n];
         Object[] keys = new Object[n];
         //TODO @mark:
         //noinspection unchecked
-        return (ToySet<J>) new ToySet<>(elemCount, hashes, keys);
+        return (ToySet<K>) new ToySet<>(input.size(), hashes, keys);
     }
 
     public boolean contains(K lookupKey) {
