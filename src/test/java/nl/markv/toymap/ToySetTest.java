@@ -58,4 +58,6 @@ class ToySetTest {
         assert set.contains(3);
         assert !set.contains(4);
     }
+
+    //TODO @mark: somehow add a test that forces a hash collision
 }

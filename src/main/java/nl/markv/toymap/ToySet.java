@@ -32,6 +32,7 @@ public class ToySet<K> implements Iterable<K> {
     }
 
     public static <K> ToySet<K> from(Collection<@NotNull K> input) {
+        //TODO @mark: n should be the de-duplicated number?
         var n = determineInitialCapacity(input.size());
         int[] hashes = new int[n];
         Object[] keys = new Object[n];
@@ -40,9 +41,17 @@ public class ToySet<K> implements Iterable<K> {
         return (ToySet<K>) new ToySet<>(input.size(), hashes, keys);
     }
 
-    public boolean contains(K lookupKey) {
-        int bucket = bucket(lookupKey.hashCode(), 0);
-        throw new IllegalStateException();  //TODO @mark:
+    public boolean contains(@NotNull K lookupKey) {
+        int lookupHash = rehash(lookupKey.hashCode());
+        int bucket = bucket(lookupHash, 0);
+        int bucketHash = this.hashes[bucket];
+        if (lookupHash != bucketHash || bucketHash == 0) {
+            return false;
+        }
+        if (lookupKey.equals(this.keys[bucket])) {
+            return true;
+        }
+        throw new IllegalStateException("impl collision handling");  //TODO @mark:
     }
 
     public boolean isEmpty() {
@@ -65,10 +74,19 @@ public class ToySet<K> implements Iterable<K> {
         return 2 * elementCount;
     }
 
+    private int rehash(int pureHashCode) {
+        if (pureHashCode == 0) {
+            return 1;
+        }
+        return pureHashCode;
+        //TODO @mark: some bit magic for better distribution?
+    }
+
     //TODO @mark: optimize this: there are some benefits to using something smart here, like DOS resistance
     //TODO @mark: but skipping that can be several times faster on simple types with cheap hashcodes
-    private int bucket(int hashCode, int collisionCount) {
-        return hashCode % this.bucketCnt;
+    //TODO @mark: also note that there is now a distinction between rehash and bucket
+    private int bucket(int rehashCode, int collisionCount) {
+        return rehashCode % this.bucketCnt;
     }
 
     //TODO @mark: also note there is a bit of tension between having capacity prime vs power of two,
