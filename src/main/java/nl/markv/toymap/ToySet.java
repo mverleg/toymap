@@ -41,6 +41,7 @@ public class ToySet<K> implements Iterable<K> {
     }
 
     public boolean contains(K lookupKey) {
+        int bucket = bucket(lookupKey.hashCode(), 0);
         throw new IllegalStateException();  //TODO @mark:
     }
 
