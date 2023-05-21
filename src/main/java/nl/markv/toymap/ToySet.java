@@ -43,8 +43,7 @@ public class ToySet<K> implements Iterable<K> {
 
     public boolean contains(@NotNull K lookupKey) {
         int lookupHash = rehash(lookupKey.hashCode());
-        int collisionCount = 0;
-        while (true) {
+        for (int collisionCount = 0; collisionCount < this.bucketCnt; collisionCount++) {
             int bucket = bucket(lookupHash, collisionCount);
             int bucketHash = this.hashes[bucket];
             if (lookupHash != bucketHash || bucketHash == 0) {
@@ -53,11 +52,8 @@ public class ToySet<K> implements Iterable<K> {
             if (lookupKey.equals(this.keys[bucket])) {
                 return true;
             }
-            collisionCount++;
-            if (collisionCount > this.bucketCnt) {
-                collisionCount = 0;
-            }
         }
+        throw new IllegalStateException("the wholo collection was checked and everything was duplicate, which should not happen since load factor should be < 1");
     }
 
     public boolean isEmpty() {
@@ -77,7 +73,7 @@ public class ToySet<K> implements Iterable<K> {
     //TODO @mark: optimize this: balance size (larger wastes memory and also hurts cache locality)
     //TODO @mark: java one uses 75%, but has a special bucketing scheme, while https://www.youtube.com/watch?v=td0h7cv4cc0 says <50% for double hashing
     private static int determineInitialCapacity(int elementCount) {
-        return 2 * elementCount;
+        return Math.min(elementCount + 1, 2 * elementCount);
     }
 
     private int rehash(int pureHashCode) {
