@@ -2,7 +2,6 @@ package nl.markv.toymap;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.ThreadSafe;
-import java.util.HashMap;
 
 @ThreadSafe
 public class ToyMap<K, V> {
@@ -29,6 +28,10 @@ public class ToyMap<K, V> {
         this.values = values;
     }
 
+    public boolean contains(K lookupKey) {
+        throw new IllegalStateException();  //TODO @mark:
+    }
+
     //TODO @mark: optimize this: balance size (larger wastes memory and also hurts cache locality)
     //TODO @mark: java one uses 75%, but has a special bucketing scheme, while https://www.youtube.com/watch?v=td0h7cv4cc0 says <50% for double hashing
     private int determineCapacity(int elementCount) {
@@ -37,7 +40,7 @@ public class ToyMap<K, V> {
 
     //TODO @mark: optimize this: there are some benefits to using something smart here, like DOS resistance
     //TODO @mark: but skipping that can be several times faster on simple types with cheap hashcodes
-    private int bucket(int hashCode) {
+    private int bucket(int hashCode, int collisionCount) {
         return hashCode % this.bucketCnt;
     }
 
