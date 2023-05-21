@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Objects;
 
 @ThreadSafe
 public class ToySet<K> implements Iterable<K> {
@@ -33,18 +34,28 @@ public class ToySet<K> implements Iterable<K> {
 
     public static <K> ToySet<K> from(Collection<@NotNull K> inputs) {
         //TODO @mark: n should be the de-duplicated number?
-        var n = determineInitialCapacity(inputs.size());
+        int n = determineInitialCapacity(inputs.size());
         int[] hashes = new int[n];
         Object[] keys = new Object[n];
+        int valueCnt = 0;
+        //TODO @mark: how to deal with changes to the collection during this iteration?
         for (var inp : inputs) {
+            Objects.requireNonNull(inp, "cannot contain null values");
             int insertHash = rehash(inp.hashCode());
             int bucket = chooseBucket(insertHash, 0, n);
+            if (hashes[bucket] != 0) {
+                if (inp.equals(keys[bucket])) {
+                    continue;
+                }
+            }
             assert hashes[bucket] == 0;  //TODO @mark: impl collisions
+            valueCnt++;
             hashes[bucket] = insertHash;
             keys[bucket] = inp;
         }
         //noinspection unchecked
-        return (ToySet<K>) new ToySet<>(inputs.size(), hashes, keys);
+        assert valueCnt <= inputs.size();
+        return (ToySet<K>) new ToySet<>(valueCnt, hashes, keys);
     }
 
     public boolean contains(@NotNull K lookupKey) {
