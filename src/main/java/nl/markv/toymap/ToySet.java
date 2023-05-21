@@ -2,12 +2,11 @@ package nl.markv.toymap;
 
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.concurrent.ThreadSafe;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Objects;
 
-@ThreadSafe
+//@ThreadSafe
 public class ToySet<K> implements Iterable<K> {
 
     //private final HashMap<K, V> fakeTmp;  //TODO @mark: TEMPORARY! REMOVE THIS!
