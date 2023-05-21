@@ -42,6 +42,9 @@ public class ToySet<K> implements Iterable<K> {
     }
 
     public boolean contains(@NotNull K lookupKey) {
+        if (this.bucketCnt == 0) {
+            return false;
+        }
         int lookupHash = rehash(lookupKey.hashCode());
         for (int collisionCount = 0; collisionCount < this.bucketCnt; collisionCount++) {
             int bucket = bucket(lookupHash, collisionCount);
@@ -73,7 +76,8 @@ public class ToySet<K> implements Iterable<K> {
     //TODO @mark: optimize this: balance size (larger wastes memory and also hurts cache locality)
     //TODO @mark: java one uses 75%, but has a special bucketing scheme, while https://www.youtube.com/watch?v=td0h7cv4cc0 says <50% for double hashing
     private static int determineInitialCapacity(int elementCount) {
-        return Math.min(elementCount + 1, 2 * elementCount);
+        // should always be >= elementCount + 1 unless 0
+        return elementCount * 2;
     }
 
     private int rehash(int pureHashCode) {
@@ -88,7 +92,7 @@ public class ToySet<K> implements Iterable<K> {
     //TODO @mark: but skipping that can be several times faster on simple types with cheap hashcodes
     //TODO @mark: also note that there is now a distinction between rehash and bucket
     private int bucket(int rehashCode, int collisionCount) {
-        return rehashCode % this.bucketCnt + collisionCount;
+        return (rehashCode + collisionCount) % this.bucketCnt;
     }
 
     //TODO @mark: also note there is a bit of tension between having capacity prime vs power of two,
