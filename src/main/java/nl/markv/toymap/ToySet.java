@@ -1,31 +1,33 @@
 package nl.markv.toymap;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.concurrent.ThreadSafe;
+import java.util.Collection;
 
 @ThreadSafe
-public class ToyMap<K, V> {
+public class ToySet<K> {
 
     //private final HashMap<K, V> fakeTmp;  //TODO @mark: TEMPORARY! REMOVE THIS!
 
     private final int bucketCnt;
-    @Nonnull
     //TODO @mark: is this better than recomputing?
-    private final int[] hashes;
-    @Nonnull
-    private final K[] keys;
-    @Nonnull
-    private final V[] values;
+    private final int @NotNull [] hashes;
+    private final @NotNull K @NotNull [] keys;
+    //@NotNull
+    //private final V[] values;
     //TODO @mark: does it make sense to store keys and values in the same array (for cache locality)?
     //TODO @mark: does not work for primitives though, and needs casting
 
-    private ToyMap(@Nonnull int[] hashes, @Nonnull K[] keys, @Nonnull V[] values) {
+    private ToySet(int[] hashes, @NotNull K @NotNull [] keys) {
         this.bucketCnt = hashes.length;
         assert keys.length == bucketCnt;
-        assert values.length == bucketCnt;
         this.hashes = hashes;
         this.keys = keys;
-        this.values = values;
+    }
+
+    public <J> ToySet<J> from(Collection<@NotNull J> input) {
+
     }
 
     public boolean contains(K lookupKey) {
