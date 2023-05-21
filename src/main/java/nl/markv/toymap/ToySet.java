@@ -43,15 +43,21 @@ public class ToySet<K> implements Iterable<K> {
 
     public boolean contains(@NotNull K lookupKey) {
         int lookupHash = rehash(lookupKey.hashCode());
-        int bucket = bucket(lookupHash, 0);
-        int bucketHash = this.hashes[bucket];
-        if (lookupHash != bucketHash || bucketHash == 0) {
-            return false;
+        int collisionCount = 0;
+        while (true) {
+            int bucket = bucket(lookupHash, collisionCount);
+            int bucketHash = this.hashes[bucket];
+            if (lookupHash != bucketHash || bucketHash == 0) {
+                return false;
+            }
+            if (lookupKey.equals(this.keys[bucket])) {
+                return true;
+            }
+            collisionCount++;
+            if (collisionCount > this.bucketCnt) {
+                collisionCount = 0;
+            }
         }
-        if (lookupKey.equals(this.keys[bucket])) {
-            return true;
-        }
-        throw new IllegalStateException("impl collision handling");  //TODO @mark:
     }
 
     public boolean isEmpty() {
@@ -86,7 +92,7 @@ public class ToySet<K> implements Iterable<K> {
     //TODO @mark: but skipping that can be several times faster on simple types with cheap hashcodes
     //TODO @mark: also note that there is now a distinction between rehash and bucket
     private int bucket(int rehashCode, int collisionCount) {
-        return rehashCode % this.bucketCnt;
+        return rehashCode % this.bucketCnt + collisionCount;
     }
 
     //TODO @mark: also note there is a bit of tension between having capacity prime vs power of two,
