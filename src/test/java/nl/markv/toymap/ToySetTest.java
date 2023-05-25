@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 class ToySetTest {
     @Test
@@ -62,6 +63,32 @@ class ToySetTest {
         assert set.contains(3);
         assert !set.contains(4);
         assert set.collisionCount() <= 2;
+    }
+
+    static class BadHashObj {
+        private final int value;
+
+        BadHashObj(int value) {
+            this.value = value;
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            return this.value == ((BadHashObj) other).value;
+        }
+
+        @Override
+        public int hashCode() {
+            return 1;
+        }
+    }
+
+    @Test
+    public void poorHashCode() {
+        ToySet<BadHashObj> set = ToySet.from(List.of(new BadHashObj(1), new BadHashObj(2), new BadHashObj(3)));
+        assert !set.isEmpty();
+        assert set.size() == 3;
+        assert set.collisionCount() == 2;
     }
 
     //TODO @mark: somehow add a test that forces a hash collision
