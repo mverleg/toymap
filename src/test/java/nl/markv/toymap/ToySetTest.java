@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 class ToySetTest {
     @Test
@@ -49,6 +48,7 @@ class ToySetTest {
         assert set.contains(2);
         assert set.contains(3);
         assert !set.contains(4);
+        assert set.capacity() == 7;
         assert set.collisionCount() <= 2;
     }
 
@@ -92,8 +92,10 @@ class ToySetTest {
 
     @Test
     public void collisionsWithSimilarPostfix() {
-        ToySet<Integer> set = ToySet.from(List.of(100_000, 200_000, 300_000, 400_000, 500_000, 600_000, 700_000));
+        int cap = 13;
+        ToySet<Integer> set = ToySet.from(List.of(100*cap, 200*cap, 300*cap, 400*cap, 500*cap, 600*cap, 700*cap));
         assert set.size() == 7;
+        assert set.capacity() == 13;
         assert set.collisionCount() == 0;
     }
 

@@ -11,7 +11,7 @@ import java.util.Objects;
 public class ToySet<K> implements Iterable<K> {
 
     private final int elemCount;
-    private final int bucketCnt;
+    private final int bucketCnt;   //TODO @mark: is this useful to store separately?
     //TODO @mark: is this better than recomputing?
     private final int @NotNull [] hashes;
     /** Use Object because we cannot properly create a generic array */
@@ -124,6 +124,10 @@ public class ToySet<K> implements Iterable<K> {
     //TODO @mark: also note that there is now a distinction between rehash and bucket
     private static int chooseBucket(int rehashCode, int collisionCount, int totalBucketCnt) {
         return (rehashCode + collisionCount) % totalBucketCnt;
+    }
+
+    public int capacity() {
+        return this.bucketCnt;
     }
 
     //TODO @mark: also note there is a bit of tension between having capacity prime vs power of two,
