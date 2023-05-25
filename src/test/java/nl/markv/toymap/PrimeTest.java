@@ -33,25 +33,29 @@ public class PrimeTest {
     public void hardcodedPrimesMatchGenerated() {
         // Use Sieve but skip indices for numbers divisible by 2, 3 and 5,
         // so iterate in steps of 30 starting from 7.
-        int max = 1_000_000_000;
+        int max = 1000;
         BitSet isComposite = new BitSet(max);
         isComposite.set(0);
         isComposite.set(1);
-        isComposite.set(2);
         int sqrtMax = (int) Math.ceil(Math.sqrt(max));
-        for (int outer = 0; outer < sqrtMax; outer++) {
+        System.out.println("sqrtMax = " + sqrtMax);
+        for (int outer = 2; outer < sqrtMax; outer++) {
             if (!isComposite.get(outer)) {
-                //System.out.println("found a prime: " + outer);
+                System.out.println("found a prime: " + outer);
                 for (int inner = 2 * outer; inner < max; inner += outer) {
-                    //System.out.println("marking " + inner + " as composite");
+                    if (!isComposite.get(inner)) {
+                        System.out.println("marking " + inner + " as composite because multiple of " + outer);
+                    }
                     isComposite.set(inner);
                 }
+            } else {
+                System.out.println("skipping, not a prime: " + outer);
             }
         }
         int primeCnt = 0;
         for (int ix = 0; ix < max; ix++) {
             if (!isComposite.get(ix)) {
-                //System.out.println("prime: " + ix);
+                System.out.println("prime: " + ix);
                 primeCnt++;
             }
         }
