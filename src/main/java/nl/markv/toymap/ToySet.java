@@ -10,8 +10,6 @@ import java.util.Objects;
 //@ThreadSafe
 public class ToySet<K> implements Iterable<K> {
 
-    private HashSet<K> fakeTmp;  //TODO @mark: TEMPORARY! REMOVE THIS!
-
     private final int elemCount;
     private final int bucketCnt;
     //TODO @mark: is this better than recomputing?
@@ -94,7 +92,8 @@ public class ToySet<K> implements Iterable<K> {
     //TODO @mark: java one uses 75%, but has a special bucketing scheme, while https://www.youtube.com/watch?v=td0h7cv4cc0 says <50% for double hashing
     private static int determineInitialCapacity(int elementCount) {
         // should always be >= elementCount + 1 unless 0
-        return Prime.firstPrimeAbove(elementCount * 2);
+        return Prime.primeAbove((int) Math.ceil(elementCount * 1.7));
+        //TODO @mark: ^ experiment with different load factors
     }
 
     private static int rehash(int pureHashCode) {

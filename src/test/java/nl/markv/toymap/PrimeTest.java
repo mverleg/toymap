@@ -17,11 +17,12 @@ public class PrimeTest {
         int prev = primes[0];
         System.out.print(prev);
         for (int i = 1; i < primes.length; i++) {
-            if (primes[i] < 0.95 * prev) {
+            if (primes[i] > 1.05 * prev) {
                 prev = primes[i];
                 System.out.print(", " + prev);
             }
         }
+        System.out.print(primes[primes.length-1]);
     }
 
     public int[] calculatePrimes() {
@@ -38,12 +39,12 @@ public class PrimeTest {
         }
         int primeCnt = max / 2 - isComposite.cardinality() + 2;
         int[] primes = new int[primeCnt];
-        int primeIx = primeCnt - 1;
-        primes[0] = (1<<31) - 1;
-        primes[primeIx--] = 2;
+        int primeIx = 0;
+        primes[primeIx++] = 2;
+        primes[primeCnt-1] = (1<<31) - 1;
         for (int ix = 0; ix < max / 2; ix++) {
             if (!isComposite.get(ix)) {
-                primes[primeIx--] = 1 + 2 * ix;
+                primes[primeIx++] = 1 + 2 * ix;
             }
         }
         return primes;
