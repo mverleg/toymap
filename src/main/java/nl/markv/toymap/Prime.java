@@ -37,6 +37,11 @@ public enum Prime {
             2112606521, 2147483647};
 
     public static int primeAbove(int minimum) {
-        return Arrays.binarySearch(SPACED_PRIMES, minimum) + 1;
+        int primeIx = Arrays.binarySearch(SPACED_PRIMES, minimum);
+        if (primeIx < 0) {
+            return SPACED_PRIMES[-primeIx + 1];
+        } else {
+            return SPACED_PRIMES[primeIx];
+        }
     }
 }
