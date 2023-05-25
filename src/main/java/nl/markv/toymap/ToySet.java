@@ -3,13 +3,14 @@ package nl.markv.toymap;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Objects;
 
 //@ThreadSafe
 public class ToySet<K> implements Iterable<K> {
 
-    //private final HashMap<K, V> fakeTmp;  //TODO @mark: TEMPORARY! REMOVE THIS!
+    private HashSet<K> fakeTmp;  //TODO @mark: TEMPORARY! REMOVE THIS!
 
     private final int elemCount;
     private final int bucketCnt;
@@ -93,7 +94,7 @@ public class ToySet<K> implements Iterable<K> {
     //TODO @mark: java one uses 75%, but has a special bucketing scheme, while https://www.youtube.com/watch?v=td0h7cv4cc0 says <50% for double hashing
     private static int determineInitialCapacity(int elementCount) {
         // should always be >= elementCount + 1 unless 0
-        return elementCount * 2;
+        return Prime.firstPrimeAbove(elementCount * 2);
     }
 
     private static int rehash(int pureHashCode) {
