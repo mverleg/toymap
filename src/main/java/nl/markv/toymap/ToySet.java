@@ -97,6 +97,10 @@ public class ToySet<K> implements Iterable<K> {
     }
 
     private static int rehash(int pureHashCode) {
+        // assert !Double.isNaN(nr);
+        // long longHash = Double.doubleToRawLongBits(Double.NaN);
+        // int hash = (int)(longHash ^ (longHash >>> 32));
+        //TODO @mark: hashcode for doubles (don't allow NaN)
         if (pureHashCode == 0) {
             return 1;
         }
