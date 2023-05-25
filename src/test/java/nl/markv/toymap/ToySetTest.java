@@ -86,9 +86,15 @@ class ToySetTest {
     @Test
     public void poorHashCode() {
         ToySet<BadHashObj> set = ToySet.from(List.of(new BadHashObj(1), new BadHashObj(2), new BadHashObj(3)));
-        assert !set.isEmpty();
         assert set.size() == 3;
         assert set.collisionCount() == 2;
+    }
+
+    @Test
+    public void collisionsWithSimilarPostfix() {
+        ToySet<Integer> set = ToySet.from(List.of(100_000, 200_000, 300_000, 400_000, 500_000, 600_000, 700_000));
+        assert set.size() == 7;
+        assert set.collisionCount() == 0;
     }
 
     //TODO @mark: somehow add a test that forces a hash collision
