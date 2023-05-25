@@ -11,12 +11,12 @@ public class PrimeTest {
         int[] primes = calculatePrimes();
         System.out.println("count = " + primes.length);
         System.out.println("first = " + primes[0]);
+        System.out.println("second to last = " + primes[primes.length - 2]);
         System.out.println("last = " + primes[primes.length - 1]);
     }
 
     public int[] calculatePrimes() {
         int max = Integer.MAX_VALUE;
-//        int max = 100;
         BitSet isComposite = new BitSet(max / 2);
         isComposite.set(0);
         int sqrtMax = (int) Math.ceil(Math.sqrt(max) / 2.);
@@ -27,10 +27,11 @@ public class PrimeTest {
                 }
             }
         }
-        int primeCnt = max / 2 - isComposite.cardinality() + 1;
+        int primeCnt = max / 2 - isComposite.cardinality() + 2;
         int[] primes = new int[primeCnt];
         int primeIx = 0;
         primes[primeIx++] = 2;
+        primes[primeCnt - 1] = (1<<31) - 1;
         for (int ix = 0; ix < max / 2; ix++) {
             if (!isComposite.get(ix)) {
                 primes[primeIx++] = 1 + 2 * ix;
