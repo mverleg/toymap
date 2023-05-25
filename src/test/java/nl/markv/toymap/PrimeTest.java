@@ -40,11 +40,12 @@ public class PrimeTest {
         System.out.println("sqrtMax = " + sqrtMax);
         for (int outer = 0; outer < sqrtMax; outer++) {
             if (!isComposite.get(outer)) {
-                System.out.println("found a prime: " + (1 + 2 * outer));
-                for (int inner = 2 * outer; inner < max; inner += 2) {
+                System.out.println("found a prime: " + (1 + 2 * outer) + " (at " + outer + ")");
+                for (int inner = 3 * outer + 1; inner <= max; inner += 2 * outer + 1) {
                     if (!isComposite.get(inner)) {
-                        System.out.println("marking " + (1 + 2 * inner) + " as composite because multiple of " + (1 + 2 * outer));
+                        System.out.println("marking " + (1 + 2 * inner) + " (at " + inner + ") as composite because multiple of " + (1 + 2 * outer));
                     }
+                    assert (2 * inner + 1) % (2 * outer + 1) == 0;  //TODO @mark:
                     isComposite.set(inner);
                 }
             } else {
@@ -53,7 +54,7 @@ public class PrimeTest {
         }
         System.out.println("built-in prime: " + 2);
         int primeCnt = 1;
-        for (int ix = 0; ix < max; ix++) {
+        for (int ix = 0; ix < max / 2; ix++) {
             if (!isComposite.get(ix)) {
                 System.out.println("prime: " + (1 + 2 * ix));
                 primeCnt++;
