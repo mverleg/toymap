@@ -13,6 +13,7 @@ class ToySetTest {
         assert set.size() == 0;
         assert !set.contains(0);
         assert !set.contains(1);
+        assert set.collisionCount() == 0;
     }
 
     @Test
@@ -23,6 +24,7 @@ class ToySetTest {
         assert !set.contains(0);
         assert set.contains(1);
         assert !set.contains(2);
+        assert set.collisionCount() == 0;
     }
 
     @Test
@@ -33,6 +35,7 @@ class ToySetTest {
         assert !set.contains(0);
         assert set.contains(1);
         assert !set.contains(2);
+        assert set.collisionCount() == 0;
     }
 
     @Test
@@ -45,6 +48,7 @@ class ToySetTest {
         assert set.contains(2);
         assert set.contains(3);
         assert !set.contains(4);
+        assert set.collisionCount() <= 2;
     }
 
     @Test
@@ -57,6 +61,7 @@ class ToySetTest {
         assert set.contains(2);
         assert set.contains(3);
         assert !set.contains(4);
+        assert set.collisionCount() <= 2;
     }
 
     //TODO @mark: somehow add a test that forces a hash collision

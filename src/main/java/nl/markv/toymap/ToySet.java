@@ -1,6 +1,7 @@
 package nl.markv.toymap;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -50,8 +51,8 @@ public class ToySet<K> implements Iterable<K> {
             hashes[bucket] = insertHash;
             keys[bucket] = inp;
         }
-        //noinspection unchecked
         assert valueCnt <= inputs.size();
+        //noinspection unchecked
         return (ToySet<K>) new ToySet<>(valueCnt, hashes, keys);
     }
 
@@ -79,6 +80,17 @@ public class ToySet<K> implements Iterable<K> {
 
     public int size() {
         return this.elemCount;
+    }
+
+    @VisibleForTesting
+    public int collisionCount() {
+        int collisions = 0;
+        for (int i = 0; i < this.bucketCnt; i++) {
+            if (this.hashes[i] != 0 && chooseBucket(this.hashes[i], 0, this.bucketCnt) != i) {
+                collisions++;
+            }
+        }
+        return collisions;
     }
 
     @NotNull
