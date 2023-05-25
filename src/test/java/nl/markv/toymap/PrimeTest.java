@@ -34,32 +34,33 @@ public class PrimeTest {
         // Use Sieve but skip indices for numbers divisible by 2, 3 and 5,
         // so iterate in steps of 30 starting from 7.
         int max = 1000;
-        BitSet isComposite = new BitSet(max);
+        BitSet isComposite = new BitSet(max / 2);
         isComposite.set(0);
-        isComposite.set(1);
-        int sqrtMax = (int) Math.ceil(Math.sqrt(max));
+        int sqrtMax = (int) Math.ceil(Math.sqrt(max) / 2.);
         System.out.println("sqrtMax = " + sqrtMax);
-        for (int outer = 2; outer < sqrtMax; outer++) {
+        for (int outer = 0; outer < sqrtMax; outer++) {
             if (!isComposite.get(outer)) {
-                System.out.println("found a prime: " + outer);
-                for (int inner = 2 * outer; inner < max; inner += outer) {
+                System.out.println("found a prime: " + (1 + 2 * outer));
+                for (int inner = 2 * outer; inner < max; inner += 2) {
                     if (!isComposite.get(inner)) {
-                        System.out.println("marking " + inner + " as composite because multiple of " + outer);
+                        System.out.println("marking " + (1 + 2 * inner) + " as composite because multiple of " + (1 + 2 * outer));
                     }
                     isComposite.set(inner);
                 }
             } else {
-                System.out.println("skipping, not a prime: " + outer);
+                System.out.println("skipping, not a prime: " + (1 + 2 * outer));
             }
         }
-        int primeCnt = 0;
+        System.out.println("built-in prime: " + 2);
+        int primeCnt = 1;
         for (int ix = 0; ix < max; ix++) {
             if (!isComposite.get(ix)) {
-                System.out.println("prime: " + ix);
+                System.out.println("prime: " + (1 + 2 * ix));
                 primeCnt++;
             }
         }
         System.out.println("found " + primeCnt + " primes");
+        assert primeCnt == 168;
 //        int primeCnt = max - isComponsite.cardinality();
 //        System.out.println("found " + primeCnt + " primes");
 //        assert primeCnt == 2147483647;
