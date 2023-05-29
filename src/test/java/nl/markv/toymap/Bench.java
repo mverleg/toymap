@@ -16,18 +16,20 @@ public class Bench {
 
     @State(Scope.Benchmark)
     public static class BenchState {
-        private List<Integer> integers;
+        private List<Integer> integerSequence;
         @Param({"builtin", "toyset"})
         public String hashImpl;
+        @Param({"integerSequence"})
+        public String listType;
 
         @Setup(Level.Invocation)
         public void setup(){
-            integers = new ArrayList<>();
+            integerSequence = new ArrayList<>();
             for (int i = 0; i < 2 * n; i += 2) {
-                integers.add(i);
+                integerSequence.add(i);
             }
             for (int i = 0; i < 2 * n; i += 4) {
-                integers.add(i);
+                integerSequence.add(i);
             }
         }
     }
@@ -42,11 +44,17 @@ public class Bench {
     @Measurement(iterations = 3)
     @BenchmarkMode(Mode.AverageTime)
     public void integerSequence(BenchState state, Blackhole blackhole) {
-        Set<Integer> set;
+        List<?> list;
+        if ("integerSequence".equals(state.listType)) {
+            list = state.integerSequence;
+        } else {
+            throw new IllegalStateException("listType = " + state.listType);
+        }
+        Set<?> set;
         if ("builtin".equals(state.hashImpl)) {
-            set = new HashSet<>(state.integers);
+            set = new HashSet<>(list);
         } else if ("toyset".equals(state.hashImpl)) {
-            set = ToySet.from(state.integers);
+            set = ToySet.from(list);
         } else {
             throw new IllegalStateException("hashImpl = " + state.hashImpl);
         }
