@@ -37,7 +37,7 @@ public class Bench {
             integerDuplicates = new ArrayList<>();
             for (int j = 0; j < 8; j++) {
                 for (int i = 0; i < n; i += 2) {
-                    int val = i << 16;
+                    int val = -(i << 16);
                     integerDuplicates.add(val);
                     integerDuplicates.add(val);
                     integerDuplicates.add(val);

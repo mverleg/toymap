@@ -44,4 +44,8 @@ public enum Prime {
             return SPACED_PRIMES[primeIx];
         }
     }
+
+    public static int largestIntPrime() {
+        return SPACED_PRIMES[SPACED_PRIMES.length - 1];
+    }
 }

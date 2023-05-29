@@ -83,6 +83,25 @@ class ToySetTest {
         }
     }
 
+    static class MinHashObj {
+        @Override
+        public boolean equals(Object other) {
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            return Integer.MIN_VALUE;
+        }
+    }
+
+    @Test
+    public void minHashCode() {
+        ToySet<MinHashObj> set = ToySet.from(List.of(new MinHashObj(), new MinHashObj()));
+        assert set.size() == 1;
+        assert set.collisionCount() == 0;
+    }
+
     @Test
     public void poorHashCode() {
         ToySet<BadHashObj> set = ToySet.from(List.of(new BadHashObj(1), new BadHashObj(2), new BadHashObj(3)));

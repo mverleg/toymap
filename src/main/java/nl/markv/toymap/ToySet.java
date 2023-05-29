@@ -43,7 +43,7 @@ public class ToySet<K> implements Iterable<K>, Set<K> {
             int insertHash = rehash(inp.hashCode());
             int bucket = chooseBucket(insertHash, 0, n);
             if (bucket < 0) {
-                System.out.println("insertHash = " + insertHash + " / bucket = " + bucket);  //TODO @mark: TEMPORARY! REMOVE THIS!
+                System.out.println("insertHash = " + insertHash + " / bucket = " + bucket + " / n = " + n);  //TODO @mark: TEMPORARY! REMOVE THIS!
             }
             if (hashes[bucket] != 0) {
                 if (inp.equals(keys[bucket])) {
@@ -159,6 +159,10 @@ public class ToySet<K> implements Iterable<K>, Set<K> {
     //TODO @mark: java one uses 75%, but has a special bucketing scheme, while https://www.youtube.com/watch?v=td0h7cv4cc0 says <50% for double hashing
     private static int determineInitialCapacity(int elementCount) {
         // should always be >= elementCount + 1 unless 0
+        double sizeWithLoadFactor = elementCount * 1.7;
+        if (sizeWithLoadFactor >= Integer.MAX_VALUE) {
+            return Prime.largestIntPrime();
+        }
         return Prime.primeAbove((int) Math.ceil(elementCount * 1.7));
         //TODO @mark: ^ experiment with different load factors
     }
@@ -180,6 +184,9 @@ public class ToySet<K> implements Iterable<K>, Set<K> {
     //TODO @mark: also note that there is now a distinction between rehash and bucket
     private static int chooseBucket(int rehashCode, int collisionCount, int totalBucketCnt) {
         int signedTotal = rehashCode + collisionCount;
+        if (signedTotal < 0 || collisionCount < 0 || totalBucketCnt < 0) {
+            System.out.println("rehashCode " + rehashCode + " signedTotal is " + signedTotal + " total size " + totalBucketCnt);   //TODO @mark: TEMPORARY! REMOVE THIS!
+        }
         return (signedTotal > 0 ? signedTotal : -signedTotal) % totalBucketCnt;
     }
 
