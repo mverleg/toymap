@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class Bench {
 
@@ -89,16 +91,22 @@ public class Bench {
     @BenchmarkMode(Mode.AverageTime)
     public void integerSequence(BenchState state, Blackhole blackhole) {
         List<?> list;
+        BiConsumer<Set<?>, BenchState> test;
         if ("integerSequence".equals(state.listType)) {
             list = state.integerSequence;
+            test = this::integerSequenceCheck;
         } else if ("integerDuplicates".equals(state.listType)) {
             list = state.negativeIntegerDuplicates;
+            test = this::integerDuplicatesCheck;
         } else if ("encodedDateDoubles".equals(state.listType)) {
             list = state.encodedDateDoubles;
+            test = this::encodedDateDoublesCheck;
         } else if ("constantNumber".equals(state.listType)) {
             list = state.constantNumber;
+            test = this::constantNumberCheck;
         } else if ("sentences".equals(state.listType)) {
             list = state.sentences;
+            test = this::sentencesCheck;
         } else {
             throw new IllegalStateException("listType = " + state.listType);
         }
@@ -110,10 +118,31 @@ public class Bench {
         } else {
             throw new IllegalStateException("hashImpl = " + state.hashImpl);
         }
+        test.accept(set, state);
+        blackhole.consume(set);
+    }
+
+    void integerDuplicatesCheck(Set<?> set, BenchState state) {
         for (int i = 0; i < 2 * n; i += 2) {
-            assert set.contains(i);
-            assert ! set.contains(i + 1);
-            //TODO @mark: this test is only valid for first one?
+            if (!set.contains(i)) {
+                throw new IllegalStateException();
+            }
+            if (set.contains(i + 1)) {
+                throw new IllegalStateException();
+            }
+        }
+    }
+
+    void integerSequenceCheck(Set<?> set, BenchState state) {
+        for (int i : state.negativeIntegerDuplicates) {
+            if (!set.contains(i)) {
+                throw new IllegalStateException();
+            }
+        }
+        for (int i = 1; i < n; i++) {
+            if (set.contains(i)) {
+                throw new IllegalStateException();
+            }
         }
     }
 }
