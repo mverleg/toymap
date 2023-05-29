@@ -20,10 +20,11 @@ public class Bench {
         private List<Integer> negativeIntegerDuplicates;
         private List<Double> encodedDateDoubles;
         private List<Double> constantNumber;
+        private List<String> sentences;
 
         @Param({"builtin", "toyset"})
         public String hashImpl;
-        @Param({"integerSequence", "integerDuplicates", "encodedDateDoubles", "constantNumber"})
+        @Param({"integerSequence", "integerDuplicates", "encodedDateDoubles", "constantNumber", "sentences"})
         public String listType;
 
         @Setup(Level.Invocation)
@@ -61,6 +62,18 @@ public class Bench {
             for (int i = 0; i < n; i++) {
                 constantNumber.add(Math.PI);
             }
+
+            String[] colors = new String[]{"Red", "Green", "Blue", "Yellow", "Purple", "Cyan", "White", "Black",};
+            sentences = new ArrayList<>();
+            for (int i = 0; i < n; i++) {
+                StringBuilder text = new StringBuilder();
+                int n = i;
+                for (int j = 0; j < 16; j++) {
+                    text.append(colors[n % colors.length]);
+                    n = n >> 3;
+                }
+                sentences.add(text.toString());
+            }
         }
     }
 
@@ -84,6 +97,8 @@ public class Bench {
             list = state.encodedDateDoubles;
         } else if ("constantNumber".equals(state.listType)) {
             list = state.constantNumber;
+        } else if ("sentences".equals(state.listType)) {
+            list = state.sentences;
         } else {
             throw new IllegalStateException("listType = " + state.listType);
         }
@@ -98,6 +113,7 @@ public class Bench {
         for (int i = 0; i < 2 * n; i += 2) {
             assert set.contains(i);
             assert ! set.contains(i + 1);
+            //TODO @mark: this test is only valid for first one?
         }
     }
 }
