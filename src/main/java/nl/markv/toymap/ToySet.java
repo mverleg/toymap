@@ -42,6 +42,9 @@ public class ToySet<K> implements Iterable<K>, Set<K> {
             Objects.requireNonNull(inp, "cannot contain null values");
             int insertHash = rehash(inp.hashCode());
             int bucket = chooseBucket(insertHash, 0, n);
+            if (bucket < 0) {
+                System.out.println("insertHash = " + insertHash + " / bucket = " + bucket);  //TODO @mark: TEMPORARY! REMOVE THIS!
+            }
             if (hashes[bucket] != 0) {
                 if (inp.equals(keys[bucket])) {
                     continue;
@@ -176,7 +179,8 @@ public class ToySet<K> implements Iterable<K>, Set<K> {
     //TODO @mark: but skipping that can be several times faster on simple types with cheap hashcodes
     //TODO @mark: also note that there is now a distinction between rehash and bucket
     private static int chooseBucket(int rehashCode, int collisionCount, int totalBucketCnt) {
-        return (rehashCode + collisionCount) % totalBucketCnt;
+        int signedTotal = rehashCode + collisionCount;
+        return (signedTotal > 0 ? signedTotal : -signedTotal) % totalBucketCnt;
     }
 
     public int capacity() {

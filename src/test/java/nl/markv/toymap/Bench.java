@@ -17,9 +17,11 @@ public class Bench {
     @State(Scope.Benchmark)
     public static class BenchState {
         private List<Integer> integerSequence;
+        private List<Integer> integerDuplicates;
+
         @Param({"builtin", "toyset"})
         public String hashImpl;
-        @Param({"integerSequence"})
+        @Param({"integerSequence", "integerDuplicates"})
         public String listType;
 
         @Setup(Level.Invocation)
@@ -31,6 +33,16 @@ public class Bench {
             for (int i = 0; i < 2 * n; i += 4) {
                 integerSequence.add(i);
             }
+
+            integerDuplicates = new ArrayList<>();
+            for (int j = 0; j < 8; j++) {
+                for (int i = 0; i < n; i += 2) {
+                    int val = i << 16;
+                    integerDuplicates.add(val);
+                    integerDuplicates.add(val);
+                    integerDuplicates.add(val);
+                }
+            }
         }
     }
 
@@ -40,13 +52,16 @@ public class Bench {
 
     @Benchmark
     @Fork(value = 1, warmups = 1)
-    @Warmup(iterations = 1)
-    @Measurement(iterations = 3)
+    @Warmup(iterations = 1, time = 1)
+    @Measurement(iterations = 1, time = 1)
+    //TODO @mark: time ^
     @BenchmarkMode(Mode.AverageTime)
     public void integerSequence(BenchState state, Blackhole blackhole) {
         List<?> list;
         if ("integerSequence".equals(state.listType)) {
             list = state.integerSequence;
+        } else if ("integerDuplicates".equals(state.listType)) {
+            list = state.integerDuplicates;
         } else {
             throw new IllegalStateException("listType = " + state.listType);
         }
