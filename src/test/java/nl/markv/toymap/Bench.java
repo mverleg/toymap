@@ -41,7 +41,7 @@ public class Bench {
             negativeIntegerDuplicates = new ArrayList<>();
             for (int j = 0; j < 8; j++) {
                 for (int i = 0; i < n; i += 2) {
-                    int val = -(i << 16);
+                    int val = -Math.abs(i << 16);
                     negativeIntegerDuplicates.add(val);
                     negativeIntegerDuplicates.add(val);
                     negativeIntegerDuplicates.add(val);

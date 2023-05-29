@@ -1,9 +1,7 @@
 package nl.markv.toymap;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openjdk.jmh.infra.Blackhole;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -23,9 +21,9 @@ public class TmpTest {
     private List<String> sentences;
 
     //@Param({"builtin", "toyset"})
-    public String hashImpl = "builtin";
+    public String hashImpl = "toyset";
     //@Param({"integerSequence", "integerDuplicates", "encodedDateDoubles", "constantNumber", "sentences"})
-    public String listType = "integerDuplicates";
+    public String listType = "encodedDateDoubles";
 
     @BeforeEach
     public void setup() {
@@ -40,7 +38,7 @@ public class TmpTest {
         negativeIntegerDuplicates = new ArrayList<>();
         for (int j = 0; j < 8; j++) {
             for (int i = 0; i < n; i += 2) {
-                int val = -(i << 16);
+                int val = -Math.abs(i << 16);
                 negativeIntegerDuplicates.add(val);
                 negativeIntegerDuplicates.add(val);
                 negativeIntegerDuplicates.add(val);
@@ -77,7 +75,7 @@ public class TmpTest {
     }
 
     @Test
-    public void bench(Blackhole blackhole) {
+    public void bench() {
         TmpTest state = this;
         List<?> list;
         BiConsumer<Set<?>, TmpTest> test;
@@ -108,7 +106,6 @@ public class TmpTest {
             throw new IllegalStateException("hashImpl = " + state.hashImpl);
         }
         test.accept(set, state);
-        blackhole.consume(set);
     }
 
     void integerSequenceCheck(Set<?> set, TmpTest state) {

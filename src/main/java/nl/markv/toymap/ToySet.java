@@ -10,6 +10,8 @@ import java.util.Set;
 
 //@ThreadSafe
 public class ToySet<K> implements Iterable<K>, Set<K> {
+    /// Factor (>1) of extra
+    private static final double MIN_OVERCAPACITY_FACTOR = 1.7;
 
     private final int elemCount;
     private final int bucketCnt;   //TODO @mark: is this useful to store separately?
@@ -50,7 +52,9 @@ public class ToySet<K> implements Iterable<K>, Set<K> {
                     continue;
                 }
             }
-            assert hashes[bucket] == 0;  //TODO @mark: impl collisions
+            if (hashes[bucket] != 0) {
+                throw new IllegalStateException("not implemented yet");  //TODO @mark:
+            }
             valueCnt++;
             hashes[bucket] = insertHash;
             keys[bucket] = inp;
@@ -159,11 +163,11 @@ public class ToySet<K> implements Iterable<K>, Set<K> {
     //TODO @mark: java one uses 75%, but has a special bucketing scheme, while https://www.youtube.com/watch?v=td0h7cv4cc0 says <50% for double hashing
     private static int determineInitialCapacity(int elementCount) {
         // should always be >= elementCount + 1 unless 0
-        double sizeWithLoadFactor = elementCount * 1.7;
+        double sizeWithLoadFactor = elementCount * MIN_OVERCAPACITY_FACTOR;
         if (sizeWithLoadFactor >= Integer.MAX_VALUE) {
             return Prime.largestIntPrime();
         }
-        return Prime.primeAbove((int) Math.ceil(elementCount * 1.7));
+        return Prime.primeAbove((int) Math.ceil(sizeWithLoadFactor));
         //TODO @mark: ^ experiment with different load factors
     }
 
