@@ -10,7 +10,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public class Bench {
 
@@ -89,7 +88,7 @@ public class Bench {
     @Measurement(iterations = 1, time = 1)
     //TODO @mark: time ^
     @BenchmarkMode(Mode.AverageTime)
-    public void integerSequence(BenchState state, Blackhole blackhole) {
+    public void bench(BenchState state, Blackhole blackhole) {
         List<?> list;
         BiConsumer<Set<?>, BenchState> test;
         if ("integerSequence".equals(state.listType)) {
@@ -122,15 +121,18 @@ public class Bench {
         blackhole.consume(set);
     }
 
-    void integerDuplicatesCheck(Set<?> set, BenchState state) {
+    void integerSequenceCheck(Set<?> set, BenchState state) {
         for (int i = 0; i < 2 * n; i += 2) {
             check(set.contains(i));
             check(!set.contains(i + 1));
         }
     }
 
-    void integerSequenceCheck(Set<?> set, BenchState state) {
+    void integerDuplicatesCheck(Set<?> set, BenchState state) {
         for (int i : state.negativeIntegerDuplicates) {
+            if (!set.contains(i)) {
+                System.out.println("i=" + i);  //TODO @mark: TEMPORARY! REMOVE THIS!
+            }
             check(set.contains(i));
         }
         for (int i = 1; i < n; i++) {
