@@ -17,11 +17,13 @@ public class Bench {
     @State(Scope.Benchmark)
     public static class BenchState {
         private List<Integer> integerSequence;
-        private List<Integer> integerDuplicates;
+        private List<Integer> negativeIntegerDuplicates;
+        private List<Double> encodedDateDoubles;
+        private List<Double> constantNumber;
 
         @Param({"builtin", "toyset"})
         public String hashImpl;
-        @Param({"integerSequence", "integerDuplicates"})
+        @Param({"integerSequence", "integerDuplicates", "encodedDateDoubles", "constantNumber"})
         public String listType;
 
         @Setup(Level.Invocation)
@@ -34,14 +36,30 @@ public class Bench {
                 integerSequence.add(i);
             }
 
-            integerDuplicates = new ArrayList<>();
+            negativeIntegerDuplicates = new ArrayList<>();
             for (int j = 0; j < 8; j++) {
                 for (int i = 0; i < n; i += 2) {
                     int val = -(i << 16);
-                    integerDuplicates.add(val);
-                    integerDuplicates.add(val);
-                    integerDuplicates.add(val);
+                    negativeIntegerDuplicates.add(val);
+                    negativeIntegerDuplicates.add(val);
+                    negativeIntegerDuplicates.add(val);
                 }
+            }
+
+            encodedDateDoubles = new ArrayList<>();
+            for (int yr = 1970; yr <= 2023; yr++) {
+                int mnth = 1;
+                for (int mnth_len : new int[]{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}) {
+                    mnth++;
+                    for (int d = 0; d < mnth_len; d++) {
+                        encodedDateDoubles.add((double) (1000 * yr + 100 * mnth + d));
+                    }
+                }
+            }
+
+            constantNumber = new ArrayList<>();
+            for (int i = 0; i < n; i++) {
+                constantNumber.add(Math.PI);
             }
         }
     }
@@ -61,7 +79,11 @@ public class Bench {
         if ("integerSequence".equals(state.listType)) {
             list = state.integerSequence;
         } else if ("integerDuplicates".equals(state.listType)) {
-            list = state.integerDuplicates;
+            list = state.negativeIntegerDuplicates;
+        } else if ("encodedDateDoubles".equals(state.listType)) {
+            list = state.encodedDateDoubles;
+        } else if ("constantNumber".equals(state.listType)) {
+            list = state.constantNumber;
         } else {
             throw new IllegalStateException("listType = " + state.listType);
         }
