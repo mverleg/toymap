@@ -124,25 +124,46 @@ public class Bench {
 
     void integerDuplicatesCheck(Set<?> set, BenchState state) {
         for (int i = 0; i < 2 * n; i += 2) {
-            if (!set.contains(i)) {
-                throw new IllegalStateException();
-            }
-            if (set.contains(i + 1)) {
-                throw new IllegalStateException();
-            }
+            check(set.contains(i));
+            check(!set.contains(i + 1));
         }
     }
 
     void integerSequenceCheck(Set<?> set, BenchState state) {
         for (int i : state.negativeIntegerDuplicates) {
-            if (!set.contains(i)) {
-                throw new IllegalStateException();
-            }
+            check(set.contains(i));
         }
         for (int i = 1; i < n; i++) {
-            if (set.contains(i)) {
-                throw new IllegalStateException();
+            check(!set.contains(i));
+        }
+    }
+
+    private void encodedDateDoublesCheck(Set<?> set, BenchState state) {
+        for (int i = 0; i <= 9_999_999; i++) {
+            check(!set.contains(i));
+            if (i < state.encodedDateDoubles.size()) {
+                Double val = state.encodedDateDoubles.get(i);
+                check(set.contains(val));
             }
+        }
+    }
+
+    private void constantNumberCheck(Set<?> set, BenchState state) {
+        for (int i = 0; i < n; i++) {
+            check(!set.contains((double) i));
+        }
+        check(set.contains(Math.PI));
+    }
+
+    private void sentencesCheck(Set<?> set, BenchState state) {
+        for (String sentence : state.sentences) {
+            check(set.contains(sentence));
+        }
+    }
+
+    void check(boolean isCheckTrue) {
+        if (!isCheckTrue) {
+            throw new IllegalStateException();
         }
     }
 }
