@@ -6,9 +6,10 @@ import org.jetbrains.annotations.VisibleForTesting;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.Set;
 
 //@ThreadSafe
-public class ToySet<K> implements Iterable<K> {
+public class ToySet<K> implements Iterable<K>, Set<K> {
 
     private final int elemCount;
     private final int bucketCnt;   //TODO @mark: is this useful to store separately?
@@ -56,7 +57,7 @@ public class ToySet<K> implements Iterable<K> {
         return (ToySet<K>) new ToySet<>(valueCnt, hashes, keys);
     }
 
-    public boolean contains(@NotNull K lookupKey) {
+    public boolean containsKey(@NotNull K lookupKey) {
         if (this.bucketCnt == 0) {
             return false;
         }
@@ -78,6 +79,11 @@ public class ToySet<K> implements Iterable<K> {
         return this.elemCount == 0;
     }
 
+    @Override
+    public boolean contains(Object obj) {
+        return containsKey((K) obj);
+    }
+
     public int size() {
         return this.elemCount;
     }
@@ -97,6 +103,53 @@ public class ToySet<K> implements Iterable<K> {
     @Override
     public Iterator<K> iterator() {
         throw new UnsupportedOperationException();  //TODO @mark:
+    }
+
+    @NotNull
+    @Override
+    public Object[] toArray() {
+        throw new UnsupportedOperationException();
+    }
+
+    @NotNull
+    @Override
+    public <T> T[] toArray(@NotNull T[] a) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean add(K k) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean containsAll(@NotNull Collection<?> c) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean addAll(@NotNull Collection<? extends K> c) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean retainAll(@NotNull Collection<?> c) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean removeAll(@NotNull Collection<?> c) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void clear() {
+        throw new UnsupportedOperationException();
     }
 
     //TODO @mark: optimize this: balance size (larger wastes memory and also hurts cache locality)
