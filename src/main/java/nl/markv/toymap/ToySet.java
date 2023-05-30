@@ -10,8 +10,16 @@ import java.util.Set;
 
 //@ThreadSafe
 public class ToySet<K> implements Iterable<K>, Set<K> {
-    /// Factor (>1) of extra
+    /// Factor (>1) of extra capacity that is initially provided to prevent collisions
     private static final double MIN_OVERCAPACITY_FACTOR = 1.7;
+    // Factor (>MIN) of extra capacity beyond which the data is compressed
+    private static final double MAX_OVERCAPACITY_FACTOR = 2.2;
+    static {
+        //noinspection ConstantValue
+        assert MIN_OVERCAPACITY_FACTOR > 1.0;
+        //noinspection ConstantValue
+        assert MAX_OVERCAPACITY_FACTOR >= MIN_OVERCAPACITY_FACTOR;
+    }
 
     private final int elemCount;
     private final int bucketCnt;   //TODO @mark: is this useful to store separately?
@@ -33,33 +41,36 @@ public class ToySet<K> implements Iterable<K>, Set<K> {
         this.keys = keys;
     }
 
+    /**
+     * The collection in the argument must not change during this method.
+     */
     public static <K> ToySet<K> from(Collection<@NotNull K> inputs) {
         //TODO @mark: n should be the de-duplicated number?
-        int n = determineInitialCapacity(inputs.size());
-        int[] hashes = new int[n];
-        Object[] keys = new Object[n];
+        int sizeBeforeDedup = inputs.size();
+        int bucketCntBeforDedup = determineInitialCapacity(sizeBeforeDedup);
+        int[] hashes = new int[bucketCntBeforDedup];
+        Object[] keys = new Object[bucketCntBeforDedup];
         int valueCnt = 0;
         //TODO @mark: how to deal with changes to the collection during this iteration?
         for (var inp : inputs) {
             Objects.requireNonNull(inp, "cannot contain null values");
             int insertHash = rehash(inp.hashCode());
-            int bucket = chooseBucket(insertHash, 0, n);
-//            if (bucket < 0) {
-//                System.out.println("insertHash = " + insertHash + " / bucket = " + bucket + " / n = " + n);  //TODO @mark: TEMPORARY! REMOVE THIS!
-//            }
-            if (hashes[bucket] != 0) {
+            for (int collisionCount = 0; collisionCount < bucketCntBeforDedup; collisionCount++) {
+                int bucket = chooseBucket(insertHash, collisionCount, bucketCntBeforDedup);
+                if (hashes[bucket] == 0) {
+                    valueCnt++;
+                    hashes[bucket] = insertHash;
+                    keys[bucket] = inp;
+                    break;
+                }
                 if (inp.equals(keys[bucket])) {
-                    continue;
+                    break;
                 }
             }
-            if (hashes[bucket] != 0) {
-                throw new IllegalStateException("not implemented yet");  //TODO @mark:
-            }
-            valueCnt++;
-            hashes[bucket] = insertHash;
-            keys[bucket] = inp;
         }
-        assert valueCnt <= inputs.size();
+        assert valueCnt <= sizeBeforeDedup;
+        assert sizeBeforeDedup == inputs.size(): "input changed during the method";
+        assert ((double) valueCnt) / hashes.length <= MAX_OVERCAPACITY_FACTOR;
         //noinspection unchecked
         return (ToySet<K>) new ToySet<>(valueCnt, hashes, keys);
     }

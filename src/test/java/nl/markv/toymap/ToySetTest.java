@@ -115,7 +115,7 @@ class ToySetTest {
         ToySet<Integer> set = ToySet.from(List.of(100*cap, 200*cap, 300*cap, 400*cap, 500*cap, 600*cap, 700*cap));
         assert set.size() == 7;
         assert set.capacity() == 13;
-        assert set.collisionCount() == 0;
+        assert set.collisionCount() == 6;
     }
 
     //TODO @mark: somehow add a test that forces a hash collision
