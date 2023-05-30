@@ -45,18 +45,29 @@ public class ToySet<K> implements Iterable<K>, Set<K> {
      * The collection in the argument must not change during this method.
      */
     public static <K> ToySet<K> from(Collection<@NotNull K> inputs) {
-        //TODO @mark: n should be the de-duplicated number?
         int sizeBeforeDedup = inputs.size();
-        int bucketCntBeforDedup = determineInitialCapacity(sizeBeforeDedup);
-        int[] hashes = new int[bucketCntBeforDedup];
-        Object[] keys = new Object[bucketCntBeforDedup];
+        ToySet<@NotNull K> largeSet = fromSizedIterator(inputs.iterator(), sizeBeforeDedup);
+        assert sizeBeforeDedup == inputs.size(): "input changed during the method";
+        if ((((double) largeSet.capacity()) / largeSet.elemCount) <= MAX_OVERCAPACITY_FACTOR) {
+            return largeSet;
+        }
+        ToySet<@NotNull K> smallSet = fromSizedIterator(largeSet.iterator(), largeSet.size());
+        assert sizeBeforeDedup == inputs.size(): "input changed during the method";
+        return smallSet;
+    }
+
+    private static <K> ToySet<K> fromSizedIterator(Iterator<K> iter, int size) {
+        int bucketCntBeforeDedup = determineInitialCapacity(size);
+        int[] hashes = new int[bucketCntBeforeDedup];
+        Object[] keys = new Object[bucketCntBeforeDedup];
         int valueCnt = 0;
-        //TODO @mark: how to deal with changes to the collection during this iteration?
-        for (var inp : inputs) {
+        for (int i = 0; i < size; i++) {
+            assert iter.hasNext();
+            @NotNull K inp = iter.next();
             Objects.requireNonNull(inp, "cannot contain null values");
             int insertHash = rehash(inp.hashCode());
-            for (int collisionCount = 0; collisionCount < bucketCntBeforDedup; collisionCount++) {
-                int bucket = chooseBucket(insertHash, collisionCount, bucketCntBeforDedup);
+            for (int collisionCount = 0; collisionCount < bucketCntBeforeDedup; collisionCount++) {
+                int bucket = chooseBucket(insertHash, collisionCount, bucketCntBeforeDedup);
                 if (hashes[bucket] == 0) {
                     valueCnt++;
                     hashes[bucket] = insertHash;
@@ -68,9 +79,7 @@ public class ToySet<K> implements Iterable<K>, Set<K> {
                 }
             }
         }
-        assert valueCnt <= sizeBeforeDedup;
-        assert sizeBeforeDedup == inputs.size(): "input changed during the method";
-        assert ((double) valueCnt) / hashes.length <= MAX_OVERCAPACITY_FACTOR;
+        assert valueCnt <= size;
         //noinspection unchecked
         return (ToySet<K>) new ToySet<>(valueCnt, hashes, keys);
     }
