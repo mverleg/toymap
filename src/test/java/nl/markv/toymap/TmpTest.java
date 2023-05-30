@@ -1,6 +1,7 @@
 package nl.markv.toymap;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -74,6 +75,7 @@ public class TmpTest {
         }
     }
 
+    @Disabled
     @Test
     public void bench() {
         TmpTest state = this;

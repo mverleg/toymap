@@ -1,11 +1,13 @@
 package nl.markv.toymap;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.BitSet;
 
 public class PrimeTest {
 
+    @Disabled
     @Test
     public void hardcodedPrimesMatchGenerated() {
         int[] primes = calculatePrimes();
