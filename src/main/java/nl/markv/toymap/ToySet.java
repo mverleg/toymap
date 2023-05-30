@@ -11,7 +11,7 @@ import java.util.Set;
 //@ThreadSafe
 public class ToySet<K> implements Iterable<K>, Set<K> {
     /// Factor (>1) of extra capacity that is initially provided to prevent collisions
-    private static final double MIN_OVERCAPACITY_FACTOR = 1.7;
+    private static final double MIN_OVERCAPACITY_FACTOR = 1.6;
     // Factor (>MIN) of extra capacity beyond which the data is compressed
     private static final double MAX_OVERCAPACITY_FACTOR = 2.2;
     static {
@@ -45,29 +45,26 @@ public class ToySet<K> implements Iterable<K>, Set<K> {
      * The collection in the argument must not change during this method.
      */
     public static <K> ToySet<K> from(Collection<@NotNull K> inputs) {
-        int sizeBeforeDedup = inputs.size();
-        ToySet<@NotNull K> largeSet = fromSizedIterator(inputs.iterator(), sizeBeforeDedup);
-        assert sizeBeforeDedup == inputs.size(): "input changed during the method";
-        if ((((double) largeSet.capacity()) / largeSet.elemCount) <= MAX_OVERCAPACITY_FACTOR) {
+        ToySet<@NotNull K> largeSet = fromCollection(inputs);
+        if ((((double) largeSet.bucketCnt) / largeSet.elemCount) <= MAX_OVERCAPACITY_FACTOR) {
             return largeSet;
         }
-        ToySet<@NotNull K> smallSet = fromSizedIterator(largeSet.iterator(), largeSet.size());
-        assert sizeBeforeDedup == inputs.size(): "input changed during the method";
-        return smallSet;
+        return decreaseCapacity(largeSet);
     }
 
-    private static <K> ToySet<K> fromSizedIterator(Iterator<K> iter, int size) {
-        int bucketCntBeforeDedup = determineInitialCapacity(size);
-        int[] hashes = new int[bucketCntBeforeDedup];
-        Object[] keys = new Object[bucketCntBeforeDedup];
+    public static <K> ToySet<K> fromCollection(Collection<@NotNull K> inputs) {
+        //TODO @mark: n should be the de-duplicated number?
+        int sizeBeforeDedup = inputs.size();
+        int bucketCntBeforDedup = determineInitialCapacity(sizeBeforeDedup);
+        int[] hashes = new int[bucketCntBeforDedup];
+        Object[] keys = new Object[bucketCntBeforDedup];
         int valueCnt = 0;
-        for (int i = 0; i < size; i++) {
-            assert iter.hasNext();
-            @NotNull K inp = iter.next();
+        //TODO @mark: how to deal with changes to the collection during this iteration?
+        for (var inp : inputs) {
             Objects.requireNonNull(inp, "cannot contain null values");
             int insertHash = rehash(inp.hashCode());
-            for (int collisionCount = 0; collisionCount < bucketCntBeforeDedup; collisionCount++) {
-                int bucket = chooseBucket(insertHash, collisionCount, bucketCntBeforeDedup);
+            for (int collisionCount = 0; collisionCount < bucketCntBeforDedup; collisionCount++) {
+                int bucket = chooseBucket(insertHash, collisionCount, bucketCntBeforDedup);
                 if (hashes[bucket] == 0) {
                     valueCnt++;
                     hashes[bucket] = insertHash;
@@ -79,9 +76,14 @@ public class ToySet<K> implements Iterable<K>, Set<K> {
                 }
             }
         }
-        assert valueCnt <= size;
+        assert valueCnt <= sizeBeforeDedup;
+        assert sizeBeforeDedup == inputs.size(): "input changed during the method";
         //noinspection unchecked
         return (ToySet<K>) new ToySet<>(valueCnt, hashes, keys);
+    }
+
+    private static <K> ToySet<K> decreaseCapacity(ToySet<K> largeSet) {
+
     }
 
     public boolean containsKey(@NotNull K lookupKey) {
