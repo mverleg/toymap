@@ -53,18 +53,16 @@ public class ToySet<K> implements Iterable<K>, Set<K> {
     }
 
     public static <K> ToySet<K> fromCollection(Collection<@NotNull K> inputs) {
-        //TODO @mark: n should be the de-duplicated number?
         int sizeBeforeDedup = inputs.size();
-        int bucketCntBeforDedup = determineInitialCapacity(sizeBeforeDedup);
-        int[] hashes = new int[bucketCntBeforDedup];
-        Object[] keys = new Object[bucketCntBeforDedup];
+        int bucketCntBeforeDedup = determineInitialCapacity(sizeBeforeDedup);
+        int[] hashes = new int[bucketCntBeforeDedup];
+        Object[] keys = new Object[bucketCntBeforeDedup];
         int valueCnt = 0;
-        //TODO @mark: how to deal with changes to the collection during this iteration?
         for (var inp : inputs) {
             Objects.requireNonNull(inp, "cannot contain null values");
             int insertHash = rehash(inp.hashCode());
-            for (int collisionCount = 0; collisionCount < bucketCntBeforDedup; collisionCount++) {
-                int bucket = chooseBucket(insertHash, collisionCount, bucketCntBeforDedup);
+            for (int collisionCount = 0; collisionCount < bucketCntBeforeDedup; collisionCount++) {
+                int bucket = chooseBucket(insertHash, collisionCount, bucketCntBeforeDedup);
                 if (hashes[bucket] == 0) {
                     valueCnt++;
                     hashes[bucket] = insertHash;
@@ -83,7 +81,28 @@ public class ToySet<K> implements Iterable<K>, Set<K> {
     }
 
     private static <K> ToySet<K> decreaseCapacity(ToySet<K> largeSet) {
-
+        int bucketCntAfterDedup = determineInitialCapacity(largeSet.elemCount);
+        int[] hashes = new int[bucketCntAfterDedup];
+        Object[] keys = new Object[bucketCntAfterDedup];
+        for (int i = 0; i < largeSet.hashes.length; i++) {
+            int insertHash = largeSet.hashes[i];
+            if (insertHash == 0) {
+                continue;
+            }
+            for (int collisionCount = 0; collisionCount < bucketCntAfterDedup; collisionCount++) {
+                int bucket = chooseBucket(insertHash, collisionCount, bucketCntAfterDedup);
+                //noinspection unchecked
+                @NotNull K inp = (K) largeSet.keys[i];
+                if (hashes[bucket] == 0) {
+                    hashes[bucket] = insertHash;
+                    keys[bucket] = inp;
+                    break;
+                }
+                assert !inp.equals(keys[bucket]): "there should be no more duplicates while downscaling";
+            }
+        }
+        //noinspection unchecked
+        return (ToySet<K>) new ToySet<>(largeSet.elemCount, hashes, keys);
     }
 
     public boolean containsKey(@NotNull K lookupKey) {

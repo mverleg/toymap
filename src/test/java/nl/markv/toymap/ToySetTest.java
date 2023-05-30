@@ -48,7 +48,7 @@ class ToySetTest {
         assert set.contains(2);
         assert set.contains(3);
         assert !set.contains(4);
-        assert set.capacity() == 7;
+        assert set.capacity() < 7;
         assert set.collisionCount() <= 2;
     }
 

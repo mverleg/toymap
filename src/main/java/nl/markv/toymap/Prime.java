@@ -35,6 +35,7 @@ public enum Prime {
             921722951, 967809121, 1016199631, 1067009623, 1120360121, 1176378131, 1235197079, 1296956957, 1361804893,
             1429895153, 1501389913, 1576459433, 1655282407, 1738046537, 1824948893, 1916196353, 2012006173,
             2112606521, 2147483647};
+    //TODO @mark: increase ratio by adding more primes
 
     public static int primeAbove(int minimum) {
         int primeIx = Arrays.binarySearch(SPACED_PRIMES, minimum);
