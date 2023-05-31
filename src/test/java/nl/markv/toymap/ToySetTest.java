@@ -29,13 +29,14 @@ class ToySetTest {
 
     @Test
     public void singletonFromDuplicatesSet() {
-        ToySet<Integer> set = ToySet.from(List.of(1, 1, 1));
+        ToySet<Integer> set = ToySet.from(List.of(1, 1, 1, 1, 1, 1, 1));
         assert !set.isEmpty();
         assert set.size() == 1;
         assert !set.contains(0);
         assert set.contains(1);
         assert !set.contains(2);
         assert set.collisionCount() == 0;
+        assert set.capacity() == 2;
     }
 
     @Test
