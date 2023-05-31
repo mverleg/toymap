@@ -7,7 +7,6 @@ import java.util.BitSet;
 
 public class PrimeTest {
 
-    @Disabled
     @Test
     public void hardcodedPrimesMatchGenerated() {
         int[] primes = calculatePrimes();
@@ -19,12 +18,12 @@ public class PrimeTest {
         int prev = primes[0];
         System.out.print(prev);
         for (int i = 1; i < primes.length; i++) {
-            if (primes[i] > 1.05 * prev) {
+            if (primes[i] > 1.02 * prev) {
                 prev = primes[i];
                 System.out.print(", " + prev);
             }
         }
-        System.out.print(primes[primes.length-1]);
+        System.out.print(", " + primes[primes.length-1]);
     }
 
     public int[] calculatePrimes() {
