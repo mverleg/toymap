@@ -1,7 +1,17 @@
 package nl.markv.toymap;
 
 import org.openjdk.jmh.Main;
-import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Level;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 
 import java.io.IOException;
@@ -130,9 +140,6 @@ public class Bench {
 
     void integerDuplicatesCheck(Set<?> set, BenchState state) {
         for (int i : state.negativeIntegerDuplicates) {
-            if (!set.contains(i)) {
-                System.out.println("i=" + i);  //TODO @mark: TEMPORARY! REMOVE THIS!
-            }
             check(set.contains(i));
         }
         for (int i = 1; i < n; i++) {

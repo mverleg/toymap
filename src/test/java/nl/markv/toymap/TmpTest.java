@@ -1,7 +1,6 @@
 package nl.markv.toymap;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -24,7 +23,7 @@ public class TmpTest {
     //@Param({"builtin", "toyset"})
     public String hashImpl = "toyset";
     //@Param({"integerSequence", "integerDuplicates", "encodedDateDoubles", "constantNumber", "sentences"})
-    public String listType = "encodedDateDoubles";
+    public String listType = "integerDuplicates";
 
     @BeforeEach
     public void setup() {
@@ -75,7 +74,6 @@ public class TmpTest {
         }
     }
 
-    @Disabled
     @Test
     public void bench() {
         TmpTest state = this;
@@ -120,13 +118,13 @@ public class TmpTest {
     void integerDuplicatesCheck(Set<?> set, TmpTest state) {
         for (int i : state.negativeIntegerDuplicates) {
             if (!set.contains(i)) {
-                System.out.println("i=" + i);  //TODO @mark: TEMPORARY! REMOVE THIS!
+                System.out.println("i1=" + i);  //TODO @mark: TEMPORARY! REMOVE THIS!
             }
             check(set.contains(i));
         }
         for (int i = 1; i < n; i++) {
             if (set.contains(i)) {
-                System.out.println("i=" + i);  //TODO @mark: TEMPORARY! REMOVE THIS!
+                System.out.println("i2=" + i);  //TODO @mark: TEMPORARY! REMOVE THIS!
             }
             check(!set.contains(i));
         }

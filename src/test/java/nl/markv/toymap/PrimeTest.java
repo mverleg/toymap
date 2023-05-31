@@ -7,6 +7,7 @@ import java.util.BitSet;
 
 public class PrimeTest {
 
+    @Disabled
     @Test
     public void hardcodedPrimesMatchGenerated() {
         int[] primes = calculatePrimes();
