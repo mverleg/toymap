@@ -92,11 +92,18 @@ public class ToySet<K> implements Iterable<K>, Set<K> {
             for (int collisionCount = 0; collisionCount < bucketCntAfterDedup; collisionCount++) {
                 int bucket = chooseBucket(insertHash, collisionCount, bucketCntAfterDedup);
                 //noinspection unchecked
+                assert collisionCount < 100;  //TODO @mark: TEMPORARY! REMOVE THIS!
                 @NotNull K inp = (K) largeSet.keys[i];
+                if (((Integer)inp)==-438829056 || ((Integer)inp) == -855736320) {
+                    System.out.println("match " + inp + " dup " + collisionCount);
+                }
                 if (hashes[bucket] == 0) {
+                    assert insertHash != 0;  //TODO @mark: TEMPORARY! REMOVE THIS!
                     hashes[bucket] = insertHash;
                     keys[bucket] = inp;
                     break;
+                } else {
+                    assert hashes[bucket] == insertHash;  //TODO @mark: properly implement the scenario where the collision bucket is occupied by a non-hash-collision
                 }
                 assert !inp.equals(keys[bucket]): "there should be no more duplicates while downscaling";
             }

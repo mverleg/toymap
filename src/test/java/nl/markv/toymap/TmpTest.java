@@ -12,7 +12,7 @@ import java.util.function.BiConsumer;
 //TODO @mark: TEMPORARY! REMOVE THIS!
 public class TmpTest {
 
-    private final static int n = 10_000_000;
+    private final static int n = 1_000_000;
 
     private List<Integer> integerSequence;
     private List<Integer> negativeIntegerDuplicates;
@@ -28,49 +28,60 @@ public class TmpTest {
     @BeforeEach
     public void setup() {
         integerSequence = new ArrayList<>();
-        for (int i = 0; i < 2 * n; i += 2) {
-            integerSequence.add(i);
-        }
-        for (int i = 0; i < 2 * n; i += 4) {
-            integerSequence.add(i);
+        if ("integerSequence".equals(listType)) {
+            for (int i = 0; i < 2 * n; i += 2) {
+                integerSequence.add(i);
+            }
+            for (int i = 0; i < 2 * n; i += 4) {
+                integerSequence.add(i);
+            }
         }
 
         negativeIntegerDuplicates = new ArrayList<>();
-        for (int j = 0; j < 8; j++) {
-            for (int i = 0; i < n; i += 2) {
-                int val = -Math.abs(i << 16);
-                negativeIntegerDuplicates.add(val);
-                negativeIntegerDuplicates.add(val);
-                negativeIntegerDuplicates.add(val);
+        if ("integerDuplicates".equals(listType)) {
+            for (int j = 0; j < 8; j++) {
+                for (int i = 0; i < n; i += 2) {
+                    // This bit shifting creates a lot of extra duplicates so the number of unique elements is less than n
+                    int val = -Math.abs(i << 12);
+                    negativeIntegerDuplicates.add(val);
+                    negativeIntegerDuplicates.add(val);
+                    negativeIntegerDuplicates.add(val);
+                }
             }
         }
 
         encodedDateDoubles = new ArrayList<>();
-        for (int yr = 1970; yr <= 2023; yr++) {
-            int mnth = 1;
-            for (int mnth_len : new int[]{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}) {
-                mnth++;
-                for (int d = 0; d < mnth_len; d++) {
-                    encodedDateDoubles.add((double) (1000 * yr + 100 * mnth + d));
+        if ("encodedDateDoubles".equals(listType)) {
+            for (int yr = 1970; yr <= 2023; yr++) {
+                int mnth = 1;
+                for (int mnth_len : new int[]{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}) {
+                    mnth++;
+                    for (int d = 0; d < mnth_len; d++) {
+                        encodedDateDoubles.add((double) (1000 * yr + 100 * mnth + d));
+                    }
                 }
             }
         }
 
         constantNumber = new ArrayList<>();
-        for (int i = 0; i < n; i++) {
-            constantNumber.add(Math.PI);
+        if ("constantNumber".equals(listType)) {
+            for (int i = 0; i < n; i++) {
+                constantNumber.add(Math.PI);
+            }
         }
 
         String[] colors = new String[]{"Red", "Green", "Blue", "Yellow", "Purple", "Cyan", "White", "Black",};
         sentences = new ArrayList<>();
-        for (int i = 0; i < n; i++) {
-            StringBuilder text = new StringBuilder();
-            int n = i;
-            for (int j = 0; j < 16; j++) {
-                text.append(colors[n % colors.length]);
-                n = n >> 3;
+        if ("sentences".equals(listType)) {
+            for (int i = 0; i < n; i++) {
+                StringBuilder text = new StringBuilder();
+                int n = i;
+                for (int j = 0; j < 16; j++) {
+                    text.append(colors[n % colors.length]);
+                    n = n >> 3;
+                }
+                sentences.add(text.toString());
             }
-            sentences.add(text.toString());
         }
     }
 
@@ -101,6 +112,7 @@ public class TmpTest {
         if ("builtin".equals(state.hashImpl)) {
             set = new HashSet<>(list);
         } else if ("toyset".equals(state.hashImpl)) {
+            System.out.println("size=" + new HashSet<>(list).size());
             set = ToySet.from(list);
         } else {
             throw new IllegalStateException("hashImpl = " + state.hashImpl);
