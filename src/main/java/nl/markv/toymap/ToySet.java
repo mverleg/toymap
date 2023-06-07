@@ -23,7 +23,7 @@ public class ToySet<K> implements Iterable<K>, Set<K> {
 
     private final int elemCount;
     private final int bucketCnt;   //TODO @mark: is this useful to store separately?
-    //TODO @mark: is this better than recomputing?
+    //TODO @mark: is this better than recomputing? test
     private final int @NotNull [] hashes;
     /** Use Object because we cannot properly create a generic array */
     private final @NotNull Object @NotNull [] keys;
@@ -210,11 +210,13 @@ public class ToySet<K> implements Iterable<K>, Set<K> {
     //TODO @mark: java one uses 75%, but has a special bucketing scheme, while https://www.youtube.com/watch?v=td0h7cv4cc0 says <50% for double hashing
     private static int determineInitialCapacity(int elementCount) {
         // should always be >= elementCount + 1 unless 0
-        double sizeWithLoadFactor = elementCount * MIN_OVERCAPACITY_FACTOR;
+        double sizeWithLoadFactor = (elementCount + 1) * MIN_OVERCAPACITY_FACTOR;
         if (sizeWithLoadFactor >= Integer.MAX_VALUE) {
-            return Prime.largestIntPrime();
+            int fallback = Prime.largestIntPrime();
+            assert fallback - 1 > elementCount;
+            return fallback;
         }
-        return Prime.primeAbove((int) Math.ceil(sizeWithLoadFactor));
+        return Prime.primeAbove((int) Math.round(sizeWithLoadFactor));
         //TODO @mark: ^ experiment with different load factors
     }
 
