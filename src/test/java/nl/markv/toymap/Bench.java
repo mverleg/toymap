@@ -94,8 +94,8 @@ public class Bench {
 
     @Benchmark
     @Fork(value = 1, warmups = 1)
-    @Warmup(iterations = 1, time = 1)
-    @Measurement(iterations = 1, time = 1)
+    @Warmup(iterations = 1, time = 5)
+    @Measurement(iterations = 5, time = 5)
     //TODO @mark: time ^
     @BenchmarkMode(Mode.AverageTime)
     public void bench(BenchState state, Blackhole blackhole) {
