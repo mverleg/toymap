@@ -25,7 +25,11 @@ public class Bench {
 
     private final static int n = 10_000_000;
 
-    @State(Scope.Benchmark)
+//    public static void main(String[] args) throws IOException {
+//        Main.main(args);
+//    }
+
+//    @State(Scope.Benchmark)
     public static class BenchState {
         private List<Integer> integerSequence;
         private List<Integer> negativeIntegerDuplicates;
@@ -88,16 +92,12 @@ public class Bench {
         }
     }
 
-    public static void main(String[] args) throws IOException {
-        Main.main(args);
-    }
-
-    @Benchmark
-    @Fork(value = 1, warmups = 1)
-    @Warmup(iterations = 1, time = 5)
-    @Measurement(iterations = 5, time = 5)
-    //TODO @mark: time ^
-    @BenchmarkMode(Mode.AverageTime)
+//    @Benchmark
+//    @Fork(value = 1, warmups = 1)
+//    @Warmup(iterations = 1, time = 5)
+//    @Measurement(iterations = 5, time = 5)
+//    //TODO @mark: time ^
+//    @BenchmarkMode(Mode.AverageTime)
     public void bench(BenchState state, Blackhole blackhole) {
         List<?> list;
         BiConsumer<Set<?>, BenchState> test;
