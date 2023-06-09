@@ -31,6 +31,8 @@ public class IntegerSeqBench {
 
     @State(Scope.Benchmark)
     public static class BenchState {
+        @Param({"builtin", "toyset"})
+        public String hashImpl;
         private List<Integer> integerSequence;
 
         @Setup(Level.Invocation)
@@ -47,13 +49,20 @@ public class IntegerSeqBench {
 
     @Benchmark
     @Fork(value = 1, warmups = 1, jvmArgsAppend = "-Xmx8g")
-    @Warmup(iterations = 1, time = 1)
-    @Measurement(iterations = 1, time = 1)
+    @Warmup(iterations = 1, time = 5)
+    @Measurement(iterations = 1, time = 10)
     @BenchmarkMode(Mode.AverageTime)
 //    @BenchmarkMode(Mode.AverageTime)
     public void bench(BenchState state, Blackhole blackhole) {
         List<?> list = state.integerSequence;
-        Set<?> set = new HashSet<>(list);
+        Set<?> set;
+        if ("builtin".equals(state.hashImpl)) {
+            set = new HashSet<>(list);
+        } else if ("toyset".equals(state.hashImpl)) {
+            set = ToySet.from(list);
+        } else {
+            throw new IllegalStateException("hashImpl = " + state.hashImpl);
+        }
         integerSequenceCheck(set, state);
         blackhole.consume(set);
     }
